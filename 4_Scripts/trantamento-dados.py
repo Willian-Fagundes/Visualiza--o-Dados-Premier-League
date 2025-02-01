@@ -5,13 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 #Criar um DB para armazenar tabelas dos times
-engine = create_engine('sqlite:////Users/estudo/Documents/Projeto/0_Bases_Tratadas/premier.db', echo = True)
+engine = create_engine('sqlite:////Users/estudo/Documents/Visualização-Dados-Premier-League/0_Bases_Tratadas/premier.db', echo =True)
 
 connection = engine.connect()
 
 #Preparar os dados para serem armazenados em um DB
 
-dados = pd.read_csv('/Users/estudo/Documents/Projeto/1_Bases_Originais/premier_league_23_24.csv', sep = ';')
+dados = pd.read_csv('/Users/estudo/Documents/Visualização-Dados-Premier-League/1_Bases_Originais/premier_league_24_25.csv', sep = ';')
 
 #Adicionar uma nova coluna com o vencedor/perdedor
 
@@ -77,7 +77,7 @@ dfteams["Pontos"] = 0
 dfteams = dfteams.sort_values(by= ["Pontos", "Saldo_de_Gols", "Gols_Marcados","Gols_Sofridos","Impedimentos","Faltas_Sofridas","Faltas_Cometidas"], ascending= [False,False,False,True,True,False,True])
 dfteams = dfteams.reset_index(drop=True)
 dfteams = dfteams.set_index("Posição")
-for x in range(1, 39):
+for x in range(1, len()):
     time = pd.read_sql(f"SELECT * FROM 'Rodada {x}'", con = engine)
 
     for _, row in time.iterrows():
