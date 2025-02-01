@@ -1,0 +1,8 @@
+﻿pandas
+plotly
+flask
+selenium
+streamlit
+bs4
+lxml
+sqlalchemy
