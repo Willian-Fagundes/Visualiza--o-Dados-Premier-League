@@ -21,6 +21,8 @@ dados = pd.read_sql('SELECT * FROM Dados', con = engine)
 times = dados['Time_Casa'].sort_values(ascending=True).unique()
 
 classificacao = pd.read_sql('SELECT * FROM "Classificação Atual"', con=engine)
+classificacao_table = classificacao.reset_index(drop= True)
+classificacao_table.index = classificacao_table.index + 1
 
 inspector = inspect(engine)
 tabelas = inspector.get_table_names()
@@ -219,6 +221,8 @@ with tab1:
     st.plotly_chart(fig_pontos)
     st.plotly_chart(fig_gols)
     st.plotly_chart(fig_partidas)
+    st.table(classificacao_table)
+    
 
 with tab2:
     st.markdown("Selecione um Time")
