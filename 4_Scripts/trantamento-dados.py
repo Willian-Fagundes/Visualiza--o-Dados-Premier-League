@@ -150,3 +150,10 @@ for x in range(1, rodada_atual + 1):
        
         dfteams.to_sql(rodada_class, con  = engine, if_exists='replace', index=False)
 
+class_atual = "Classificação Atual"
+dfteams = dfteams.sort_values(by= ["Pontos", "Saldo_de_Gols", "Gols_Marcados","Gols_Sofridos","Impedimentos","Faltas_Sofridas","Faltas_Cometidas"], ascending= [False,False,False,True,True,False,True])
+dfteams = dfteams.reset_index(drop=True)
+       
+dfteams.to_sql(class_atual, con  = engine, if_exists='replace', index=False)
+
+

@@ -4,7 +4,7 @@ import json
 import pandas as pd
 from pandas import json_normalize
 from io import StringIO
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 import plotly.express as px
 import random
 import plotly.figure_factory as ff
@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 
 st.title("Dados da temporada 23/24 Premier League")
 
-engine = create_engine('sqlite:////Users/estudo/Documents/Projeto/0_Bases_Tratadas/premier.db', echo =True)
+engine = create_engine('sqlite:////Users/estudo/Documents/Visualização-Dados-Premier-League/0_Bases_Tratadas/premier.db', echo =True)
 
 connection = engine.connect()
 
@@ -20,13 +20,19 @@ dados = pd.read_sql('SELECT * FROM Dados', con = engine)
 
 times = dados['Time_Casa'].sort_values(ascending=True).unique()
 
-classificacao = pd.read_sql('SELECT * FROM "Classificação 38"', con=engine)
+classificacao = pd.read_sql('SELECT * FROM "Classificação Atual"', con=engine)
+
+inspector = inspect(engine)
+tabelas = inspector.get_table_names()
+tabelas_classificacao = [tabela for tabela in tabelas if "classificação" in tabela.lower()]
+quantidade_tabelas = len(tabelas_classificacao)
+max_pontos = quantidade_tabelas * 3
 
 cores = ["#636EFA", "#EF553B", "#00CC96"]
 cores1 = ["#636EFA", "#00CC96"]
 
 pontos = classificacao[["Times","Pontos"]]
-pontos["Aproveitamento"] = (pontos["Pontos"] / 114 * 100).round(2)
+pontos["Aproveitamento"] = (pontos["Pontos"] / max_pontos * 100).round(2)
 
 
 
@@ -55,7 +61,7 @@ for i, trace in enumerate(fig_gols.data):
 
 def partidas (time):
     cores = ["#636EFA", "#EF553B", "#00CC96"]
-    dados = pd.read_sql("SELECT * FROM 'Classificação 38'", con = engine)
+    dados = pd.read_sql("SELECT * FROM 'Classificação Atual'", con = engine)
     partida = dados.loc[dados["Times"] == time]
     partida_final = partida[["Times", "Partidas_Vencidas", "Partidas_Perdidas", "Empates"]]
 
@@ -73,7 +79,7 @@ def partidas (time):
     return fig
 
 def saldo_gols (time):
-    dados = pd.read_sql("SELECT * FROM 'Classificação 38'", con = engine)
+    dados = pd.read_sql("SELECT * FROM 'Classificação Atual'", con = engine)
     gols_marcados = dados[["Times", "Gols_Marcados", "Gols_Sofridos", "Saldo_de_Gols"]]
     gols_time = dados.loc[dados["Times"] == time]
     gols_final = gols_time[["Times", "Gols_Marcados", "Gols_Sofridos", "Saldo_de_Gols"]]
@@ -85,9 +91,15 @@ def saldo_gols (time):
 
 
 def pos_time (time):
+    inspector = inspect(engine)
+    tabelas = inspector.get_table_names()
+    tabelas_classificacao = [tabela for tabela in tabelas if "classificação" in tabela.lower()]
+    quantidade_tabelas = len(tabelas_classificacao)
     rodadas = []
     gols = []
-    for i in range(1,39):
+    rodada_atual = pd.read_sql("SELECT * FROM 'Classificação Atual'", con = engine)
+    rodada = rodada_atual["Partidas_Jogadas"]
+    for i in range(1, quantidade_tabelas ):
         tabela_posicao = pd.read_sql(f'SELECT * FROM "Classificação {i}"', con = engine)
         rodadas.append(tabela_posicao)   
     
@@ -105,19 +117,23 @@ def pos_time (time):
         )),
 
         xaxis=dict(
-            range=[1, 38],
+            range=[1, quantidade_tabelas],
             tickmode='linear',
             dtick=1, title=dict(
-            text="Rodadas"
+            text="Rodadas"  
         )))
     return fig
 
 def saldogols(time):
+    inspector = inspect(engine)
+    tabelas = inspector.get_table_names()
+    tabelas_classificacao = [tabela for tabela in tabelas if "classificação" in tabela.lower()]
+    quantidade_tabelas = len(tabelas_classificacao)
     rodadas = []
     saldo_gols = []
     gols_feitos = []
     gols_sofridos = []
-    for i in range(1,39):
+    for i in range(1,quantidade_tabelas):
         tabela_posicao = pd.read_sql(f'SELECT * FROM "Classificação {i}"', con = engine)
         rodadas.append(tabela_posicao) 
         saldo_gol = tabela_posicao.loc[tabela_posicao["Times"] == time, "Saldo_de_Gols"]
@@ -163,7 +179,7 @@ def saldogols(time):
     return fig
 
 def posicao_final(time):
-    classificacao = pd.read_sql('SELECT * FROM "Classificação 38"', con=engine)
+    classificacao = pd.read_sql('SELECT * FROM "Classificação Atual"', con=engine)
     pos_final = classificacao.loc[classificacao["Times"] == time].index[0] + 1
     return pos_final
 
@@ -207,9 +223,9 @@ with tab1:
 with tab2:
     st.markdown("Selecione um Time")
     selecionar = st.selectbox("Times", times)
-    dados = pd.read_sql("SELECT * FROM 'Classificação 38'", con = engine)
+    dados = pd.read_sql("SELECT * FROM 'Classificação Atual'", con = engine)
     pontos = dados[["Times","Pontos"]]
-    pontos["Aproveitamento"] = (pontos["Pontos"] / 114 * 100).round(2)
+    pontos["Aproveitamento"] = (pontos["Pontos"] / 72 * 100).round(2)
     media = round(pontos["Aproveitamento"].mean(), 2)
     aproveita = pontos.loc[pontos["Times"] == selecionar, "Aproveitamento"].values[0]
     diferenca = round(aproveita - media, 2)
@@ -221,7 +237,7 @@ with tab2:
 
 
     df_times = dados[["Times", "Gols_Marcados"]]
-    df_times["media_gols"] = (dados["Gols_Marcados"]/38).round(2)
+    df_times["media_gols"] = (dados["Gols_Marcados"]/ quantidade_tabelas).round(2)
     media_gol = (df_times["media_gols"].sum()/20).round(2)
     media_time = df_times.loc[df_times["Times"] == selecionar, "media_gols"].sum()
     gols_max = df_times["media_gols"].max()
@@ -249,7 +265,7 @@ with tab2:
 
     with st.expander("Dados Gerais"):
         with st.container():
-            st.metric(label = "Posição final", value= f"{posicao_final(selecionar)}º")
+            st.metric(label = "Posição Atual", value= f"{posicao_final(selecionar)}º")
             col1, col2 = st.columns(2)
             with col1:
             
