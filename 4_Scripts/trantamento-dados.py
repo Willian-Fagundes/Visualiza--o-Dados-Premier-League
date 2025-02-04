@@ -58,6 +58,9 @@ for j, inicio in enumerate(range(0, len(dados), 10), start=1):
 
 # Tabela de classificação a cada rodada 1 - 38
 
+rodada_atual = nome_rodada.replace('Rodada', '').replace(' ','')
+rodada_atual = int(rodada_atual)
+rodada_atual
 
 #Adicionar os pontos de classificação
 
@@ -77,7 +80,8 @@ dfteams["Pontos"] = 0
 dfteams = dfteams.sort_values(by= ["Pontos", "Saldo_de_Gols", "Gols_Marcados","Gols_Sofridos","Impedimentos","Faltas_Sofridas","Faltas_Cometidas"], ascending= [False,False,False,True,True,False,True])
 dfteams = dfteams.reset_index(drop=True)
 dfteams = dfteams.set_index("Posição")
-for x in range(1, len()):
+
+for x in range(1, rodada_atual + 1):
     time = pd.read_sql(f"SELECT * FROM 'Rodada {x}'", con = engine)
 
     for _, row in time.iterrows():
