@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 
 st.title("Dados da temporada 23/24 Premier League")
 
-engine = create_engine('sqlite:////Users/estudo/Documents/Visualização-Dados-Premier-League/0_Bases_Tratadas/premier.db',  pool_pre_ping=True, echo =True)
+engine = create_engine('sqlite:///0_Bases_Tratadas/premier.db',  pool_pre_ping=True, echo =True)
 
 connection = engine.connect()
 
