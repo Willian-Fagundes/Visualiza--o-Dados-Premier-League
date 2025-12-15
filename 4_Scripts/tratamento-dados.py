@@ -5,13 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 #Criar um DB para armazenar tabelas dos times
-engine = create_engine('sqlite:////Users/estudo/Documents/Visualização-Dados-Premier-League/0_Bases_Tratadas/premier.db', echo =True)
+engine = create_engine('sqlite:////workspaces/Visualiza--o-Dados-Premier-League/0_Bases_Tratadas/premier_tratado.db', echo =True)
 
 connection = engine.connect()
 
 #Preparar os dados para serem armazenados em um DB
 
-dados = pd.read_csv('/Users/estudo/Documents/Visualização-Dados-Premier-League/1_Bases_Originais/premier_league_24_25.csv', sep = ';')
+dados = pd.read_csv('/workspaces/Visualiza--o-Dados-Premier-League/1_Bases_Originais/premier_league_24_25.csv', sep = ';')
 
 #Adicionar uma nova coluna com o vencedor/perdedor
 
