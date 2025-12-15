@@ -1,8 +1,24 @@
-﻿pandas
+﻿# 📚 Frameworks e Bibliotecas Python (EDA e Ciência de Dados)
+
+## Fundamentais
+pandas
+numpy
+scipy
+
+## Visualização Estática e Estatística
+matplotlib
+seaborn
+statsmodels
+
+## Visualização Interativa
 plotly
-flask
-selenium
-streamlit
-bs4
-lxml
-sqlalchemy
+cufflinks
+altair
+bokeh
+folium
+
+## Machine Learning
+scikit-learn
+tensorflow
+keras
+pytorch
